@@ -41,19 +41,19 @@ register();
           </button>
 
           <swiper-container #swiperEl init="false">
-  @for (item of items; track item.label) {
-    <swiper-slide>
-      <button
-        type="button"
-        class="i-want-card d-flex flex-column align-items-center justify-content-center gap-3 rounded-3 w-100 border-0"
-        (click)="onItemClick(item)"
-      >
-        <i class="material-icons">{{ item.icon }}</i>
-        <span class="text-center text-dark">{{ item.label }}</span>
-      </button>
-    </swiper-slide>
-  }
-</swiper-container>
+            @for (item of items; track item.label) {
+              <swiper-slide style="height: auto !important;">
+                <button
+                  type="button"
+                  class="i-want-card d-flex flex-column align-items-center justify-content-center gap-3 rounded-3 w-100 h-100 border-0"
+                  (click)="onItemClick(item)"
+                >
+                  <i class="material-icons">{{ item.icon }}</i>
+                  <span class="text-center text-dark">{{ item.label }}</span>
+                </button>
+              </swiper-slide>
+            }
+          </swiper-container>
 
         </div>
       </div>
@@ -65,7 +65,7 @@ register();
       width: 100%;
       padding-bottom: 0 !important;
       overflow: hidden;
-      padding: 0 24px;
+      padding: 0 23px;
       /* no cursor here — let injectStyles handle it */
     }
 
@@ -75,29 +75,29 @@ register();
     }
 
     .i-want-card {
-  padding: 12px 16px;
-  transition: box-shadow 0.2s, transform 0.2s;
-  background: #fff;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-  border: 1px solid #dee2e6 !important;
-  outline: none;
-  /* NO cursor property — let <button> handle it natively */
-}
+      padding: 12px 16px;
+      transition: box-shadow 0.2s, transform 0.2s;
+      background: #fff;
+      box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+      border: 1px solid #dee2e6 !important;
+      outline: none;
+      /* NO cursor property — let <button> handle it natively */
+    }
 
-.i-want-card:hover {
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
-  transform: translateY(-2px);
-}
+    .i-want-card:hover {
+      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+      transform: translateY(-2px);
+    }
 
-.i-want-card:focus-visible {
-  outline: 2px solid #0d6efd;
-  outline-offset: 2px;
-}
+    .i-want-card:focus-visible {
+      outline: 2px solid #0d6efd;
+      outline-offset: 2px;
+    }
 
-.i-want-card i {
-  color: #CED4DA !important;
-  font-size: 48px !important;
-}
+    .i-want-card i {
+      color: #CED4DA !important;
+      font-size: 48px !important;
+    }
     /* Custom nav buttons */
     .swiper-btn-prev,
     .swiper-btn-next {
@@ -156,51 +156,65 @@ export class AppComponent implements AfterViewInit {
       pagination: { clickable: true },
       spaceBetween: 24,
       grabCursor: true,
+      autoHeight: false,
       injectStyles: [
         `
         :host .swiper,
-  :host .swiper-wrapper {
-    cursor: grab !important;
-  }
+        :host .swiper-wrapper {
+          cursor: grab !important;
+        }
 
-  /* While dragging = grabbing everywhere */
-  :host(.is-dragging) .swiper,
-  :host(.is-dragging) .swiper-wrapper,
-  :host(.is-dragging) .swiper-slide,
-  :host(.is-dragging) .swiper-slide * {
-    cursor: grabbing !important;
-  }
+        /* While dragging = grabbing everywhere */
+        :host(.is-dragging) .swiper,
+        :host(.is-dragging) .swiper-wrapper,
+        :host(.is-dragging) .swiper-slide,
+        :host(.is-dragging) .swiper-slide * {
+          cursor: grabbing !important;
+        }
 
-  :host .swiper {
-    padding: 2px 0;
-    overflow: visible !important;
-  }
+        /* Make the swiper track use flexbox with stretch */
+        :host .swiper-wrapper {
+          display: flex !important;
+          align-items: stretch !important;
+        }
 
-  :host .swiper-pagination {
-    position: relative !important;
-    margin-top: 16px;
-  }
+        /* Each slide must be flex and fill the wrapper height */
+        :host .swiper-slide {
+          display: flex !important;
+          flex-direction: column !important;
+          height: auto !important;
+        }
 
-  :host .swiper-pagination-bullet {
-    width: 32px;
-    height: 8px;
-    background: #ced4da;
-    opacity: 1;
-    border-radius: 9999px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin: 0;
-  }
+        :host .swiper {
+          padding: 2px 0;
+          overflow: visible !important;
+        }
 
-  :host .swiper-pagination-bullet-active {
-    background: #157db9;
-    width: 32px;
-    height: 8px;
-    border-radius: 9999px;
-  }
-  `
+        :host .swiper-pagination {
+          position: relative !important;
+          margin-top: 16px;
+        }
+
+        :host .swiper-pagination-bullet {
+          width: 32px;
+          height: 8px;
+          background: #ced4da;
+          opacity: 1;
+          border-radius: 9999px;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          margin: 0;
+        }
+
+        :host .swiper-pagination-bullet-active {
+          background: #157db9;
+          width: 32px;
+          height: 8px;
+          border-radius: 9999px;
+        }
+        `
       ],
       breakpoints: {
         0: { slidesPerView: 2, slidesPerGroup: 2 },
