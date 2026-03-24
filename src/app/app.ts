@@ -132,6 +132,10 @@
             }
             .swiper-btn-prev:focus,
             .swiper-btn-next:focus {
+              outline: none;
+            }
+            .swiper-btn-prev:focus-visible,
+            .swiper-btn-next:focus-visible {
               outline: 2px solid #157db9;
             }
 
@@ -174,6 +178,7 @@
               slidesPerView: 6,
               slidesPerGroup: 6,
               loop: true,
+              longSwipesRatio: 0.1,
               navigation: false,   // disabled — using custom buttons instead
               pagination: { clickable: true },
               spaceBetween: 24,
