@@ -4,3 +4,14 @@ body {
     font-family: "Roboto", sans-serif;
     color: #313536;
 }
+
+.swiper-pagination-bullet {
+    border-radius: 9999px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.swiper-pagination-bullet:focus,
+.swiper-pagination-bullet:focus-visible {
+    outline: 2px solid #157db9 !important;
+    outline-offset: 2px !important;
+}
