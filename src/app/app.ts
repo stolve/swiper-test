@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
 import { register } from 'swiper/element/bundle';
 
 register();
@@ -168,6 +168,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   swiperInitialized = false;
 
   items: { label: string; icon: string }[] = [];
+  constructor(private cdr: ChangeDetectorRef) { }
 
   private allItems = [
     { label: 'Order Line/Device', icon: 'devices' },
@@ -190,15 +191,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   showAll() {
-    this.items = [...this.allItems];
+    this.items = [];
     this.swiperInitialized = false;
-    this.destroySwiper();
+    this.cdr.detectChanges();               // 👈 force DOM removal
+    this.items = [...this.allItems];
+    this.cdr.detectChanges();               // 👈 force DOM recreation
     setTimeout(() => this.initSwiper());
   }
+
   showFew() {
-    this.items = this.allItems.slice(0, 3);
+    this.items = [];
     this.swiperInitialized = false;
-    this.destroySwiper();
+    this.cdr.detectChanges();               // 👈 force DOM removal
+    this.items = this.allItems.slice(0, 3);
+    this.cdr.detectChanges();               // 👈 force DOM recreation
     setTimeout(() => this.initSwiper());
   }
 
@@ -207,11 +213,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.swiperInitialized = false;
   }
 
-  destroySwiper() {
-    if (this.swiperRef?.nativeElement?.swiper) {
-      this.swiperRef.nativeElement.swiper.destroy(true, true);
-    }
-  }
 
   get showNav(): boolean {
     return this.items.length > this.getCurrentSlidesPerGroup();
@@ -241,6 +242,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     const hasMultiplePages = this.items.length > this.getCurrentSlidesPerGroup();
 
     Object.assign(swiperEl, {
+      observer: true,
+      observeParents: true,
+      observeSlideChildren: true,
       slidesPerView: 6,
       slidesPerGroup: 6,
       loop: true,
