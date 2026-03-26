@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { register } from 'swiper/element/bundle';
 
 register();
@@ -8,72 +8,69 @@ register();
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <div class="container py-4">
+      <div class="card border rounded-3 shadow-sm">
+        <h4 class="mb-4 ps-3 pt-3 fw-normal">I Want To...</h4>
 
-      <div class="d-flex gap-2 mb-3">
-        <button class="btn btn-outline-secondary btn-sm" (click)="showAll()">All Cards</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="showFew()">Few Cards</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="showNone()">No Cards</button>
-      </div>
+        <div class="position-relative">
 
-      <div class="card border rounded-3 shadow-sm" style="overflow: hidden;">
-        <h4 class="mb-3 ps-3 pt-3 fw-normal">I Want To...</h4>
+          <button
+            class="swiper-btn-prev d-none d-lg-flex position-absolute align-items-center justify-content-center"
+            aria-label="Previous"
+            (mouseenter)="prevHovered = true"
+            (mouseleave)="prevHovered = false"
+            (click)="slidePrev()"
+            [style.box-shadow]="prevHovered ? '0 .5rem 1rem rgba(0,0,0,.15)' : 'var(--elevation-sm, 0 1px 3px rgba(0,0,0,.1))'"
+            [style.transform]="prevHovered ? 'translateY(calc(-50% - 2px))' : 'translateY(-50%)'"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
 
-        @if (items.length > 0) {
-          <div class="position-relative">
+          <button
+            class="swiper-btn-next d-none d-lg-flex position-absolute align-items-center justify-content-center"
+            aria-label="Next"
+            (mouseenter)="nextHovered = true"
+            (mouseleave)="nextHovered = false"
+            (click)="slideNext()"
+            [style.box-shadow]="nextHovered ? '0 .5rem 1rem rgba(0,0,0,.15)' : 'var(--elevation-sm, 0 1px 3px rgba(0,0,0,.1))'"
+            [style.transform]="nextHovered ? 'translateY(calc(-50% - 2px))' : 'translateY(-50%)'"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
 
-            @if (showNav) {
-              <button
-                class="swiper-btn-prev d-none d-lg-flex position-absolute align-items-center justify-content-center"
-                aria-label="Previous"
-                (mouseenter)="prevHovered = true"
-                (mouseleave)="prevHovered = false"
-                (click)="slidePrev()"
-                [style.box-shadow]="prevHovered ? '0 .5rem 1rem rgba(0,0,0,.15)' : 'var(--elevation-sm, 0 1px 3px rgba(0,0,0,.1))'"
-                [style.transform]="prevHovered ? 'translateY(calc(-50% - 2px))' : 'translateY(-50%)'"
+          <swiper-container #swiperEl init="false" tabindex="0">
+            @for (item of items; track item.label) {
+              <swiper-slide
+                style="height: auto !important;"
+                tabindex="0"
+                (keydown.enter)="onItemClick(item)"
+                (keydown.space)="onItemClick(item)"
               >
-                <span class="material-icons">chevron_left</span>
-              </button>
-
-              <button
-                class="swiper-btn-next d-none d-lg-flex position-absolute align-items-center justify-content-center"
-                aria-label="Next"
-                (mouseenter)="nextHovered = true"
-                (mouseleave)="nextHovered = false"
-                (click)="slideNext()"
-                [style.box-shadow]="nextHovered ? '0 .5rem 1rem rgba(0,0,0,.15)' : 'var(--elevation-sm, 0 1px 3px rgba(0,0,0,.1))'"
-                [style.transform]="nextHovered ? 'translateY(calc(-50% - 2px))' : 'translateY(-50%)'"
-              >
-                <span class="material-icons">chevron_right</span>
-              </button>
-            }
-
-            <swiper-container #swiperEl init="false" tabindex="0" [style.padding-bottom]="showNav ? '0px' : '16px'">
-              @for (item of items; track item.label) {
-                <swiper-slide
-                  style="height: auto !important;"
-                  tabindex="0"
-                  (keydown.enter)="onItemClick(item)"
-                  (keydown.space)="onItemClick(item)"
+                <div
+                  role="button"
+                  tabindex="-1"
+                  class="i-want-card d-flex flex-column align-items-center justify-content-center gap-3 rounded-3 w-100 h-100 border-0"
+                  (click)="onItemClick(item)"
                 >
-                  <div
-                    role="button"
-                    tabindex="-1"
-                    class="i-want-card d-flex flex-column align-items-center justify-content-center gap-3 rounded-3 w-100 h-100 border-0"
-                    (click)="onItemClick(item)"
-                  >
-                    <i class="material-icons">{{ item.icon }}</i>
-                    <span class="text-center text-dark">{{ item.label }}</span>
-                  </div>
-                </swiper-slide>
-              }
-            </swiper-container>
+                  <i class="material-icons">{{ item.icon }}</i>
+                  <span class="text-center text-dark">{{ item.label }}</span>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
 
-          </div>
-        } @else {
-          <div class="d-flex justify-content-center align-items-center py-4">
-            <p class="text-muted mb-0">Nothing to Do Here</p>
-          </div>
-        }
+        </div>
+
+        <!-- Pagination outside swiper — not affecting arrow centering -->
+        <div class="custom-pagination d-flex justify-content-center gap-2 mt-3 mb-3">
+          @for (page of pages; track page) {
+            <button
+              class="pagination-bullet"
+              [class.active]="page === activePage"
+              (click)="goToPage(page)"
+              [attr.aria-label]="'Go to page ' + (page + 1)"
+            ></button>
+          }
+        </div>
 
       </div>
     </div>
@@ -82,9 +79,9 @@ register();
 
     swiper-container {
       width: 100%;
-      padding-top: 2px;
-      padding-left: 23px;
-      padding-right: 23px;
+      padding: 2px 23px;
+      display: block;
+      overflow: hidden;
     }
 
     swiper-container.is-dragging {
@@ -98,6 +95,7 @@ register();
       box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
       border: 1px solid #dee2e6 !important;
       outline: none;
+      cursor: pointer;
     }
 
     .i-want-card:hover {
@@ -130,7 +128,9 @@ register();
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      top: calc(50% - 18px);
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
       z-index: 10;
       background-color: var(--card, #fff);
       border: 1px solid var(--border, #dee2e6);
@@ -138,6 +138,9 @@ register();
       transition: box-shadow 0.2s ease, transform 0.2s ease;
       padding: 0;
     }
+
+    .swiper-btn-prev { left: 8px; }
+    .swiper-btn-next { right: 8px; }
 
     .swiper-btn-prev:focus,
     .swiper-btn-next:focus {
@@ -149,28 +152,42 @@ register();
       outline: 2px solid #157db9;
     }
 
-    .swiper-btn-prev { left: 8px; }
-    .swiper-btn-next { right: 8px; }
-
     .swiper-btn-prev .material-icons,
     .swiper-btn-next .material-icons {
       font-size: 28px;
       color: var(--foreground, #333);
     }
 
+    .pagination-bullet {
+      width: 32px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #ced4da;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .pagination-bullet.active {
+      background: #157db9;
+    }
+
+    .pagination-bullet:focus-visible {
+      outline: 2px solid #157db9;
+      outline-offset: 2px;
+    }
+
   `]
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements AfterViewInit {
   @ViewChild('swiperEl') swiperRef!: ElementRef;
 
   prevHovered = false;
   nextHovered = false;
-  swiperInitialized = false;
+  activePage = 0;
 
-  items: { label: string; icon: string }[] = [];
-  constructor(private cdr: ChangeDetectorRef) { }
-
-  private allItems = [
+  items = [
     { label: 'Order Line/Device', icon: 'devices' },
     { label: 'Upgrade Device', icon: 'install_mobile' },
     { label: 'Manage Lines', icon: 'signal_cellular_alt' },
@@ -186,71 +203,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     { label: 'Action 7', icon: 'cloud_upload' }
   ];
 
-  ngOnInit() {
-    this.items = [...this.allItems];
-  }
-
-  showAll() {
-    this.items = [];
-    this.swiperInitialized = false;
-    this.cdr.detectChanges();               // 👈 force DOM removal
-    this.items = [...this.allItems];
-    this.cdr.detectChanges();               // 👈 force DOM recreation
-    setTimeout(() => this.initSwiper());
-  }
-
-  showFew() {
-    this.items = [];
-    this.swiperInitialized = false;
-    this.cdr.detectChanges();               // 👈 force DOM removal
-    this.items = this.allItems.slice(0, 3);
-    this.cdr.detectChanges();               // 👈 force DOM recreation
-    setTimeout(() => this.initSwiper());
-  }
-
-  showNone() {
-    this.items = [];
-    this.swiperInitialized = false;
-  }
-
-
-  get showNav(): boolean {
-    return this.items.length > this.getCurrentSlidesPerGroup();
+  get pages(): number[] {
+    const slidesPerGroup = this.getCurrentSlidesPerGroup();
+    const total = Math.ceil(this.items.length / slidesPerGroup);
+    return Array.from({ length: total }, (_, i) => i);
   }
 
   getCurrentSlidesPerGroup(): number {
     const w = window.innerWidth;
     if (w >= 1200) return 6;
-    if (w >= 992)  return 5;
-    if (w >= 768)  return 4;
-    if (w >= 576)  return 3;
+    if (w >= 992) return 5;
+    if (w >= 768) return 4;
+    if (w >= 576) return 3;
     return 2;
   }
 
   ngAfterViewInit() {
-    this.initSwiper();
-  }
-
-  
-  initSwiper() {
-    if (this.swiperInitialized) return;
-    if (!this.swiperRef?.nativeElement) return;
-
     const swiperEl = this.swiperRef.nativeElement;
-    this.swiperInitialized = true;
-
-    const hasMultiplePages = this.items.length > this.getCurrentSlidesPerGroup();
 
     Object.assign(swiperEl, {
-      observer: true,
-      observeParents: true,
-      observeSlideChildren: true,
       slidesPerView: 6,
       slidesPerGroup: 6,
       loop: true,
+      watchOverflow: false,
       longSwipesRatio: 0.1,
       navigation: false,
-      pagination: { clickable: true },
+      pagination: false,
       spaceBetween: 24,
       grabCursor: true,
       autoHeight: false,
@@ -271,7 +249,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         :host .swiper-wrapper {
           display: flex !important;
           align-items: stretch !important;
-          ${!hasMultiplePages ? 'height: 100% !important;' : ''}
         }
 
         :host .swiper-slide {
@@ -279,53 +256,18 @@ export class AppComponent implements OnInit, AfterViewInit {
           flex-direction: column !important;
           height: auto !important;
         }
-          
 
         :host .swiper {
           padding: 2px 0;
           overflow: visible !important;
         }
-
-        :host .swiper-pagination {
-          position: relative !important;
-          margin-top: 16px;
-          margin-bottom: 0px;
-        }
-
-        :host .swiper-pagination-lock {
-          display: none !important;
-        }
-
-        :host .swiper-pagination-bullet {
-          width: 32px;
-          height: 8px;
-          background: #ced4da;
-          opacity: 1;
-          border-radius: 9999px;
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          margin: 0;
-        }
-
-        :host .swiper-pagination-bullet:focus {
-          outline: 2px solid #157db9 !important;
-        }
-
-        :host .swiper-pagination-bullet-active {
-          background: #157db9;
-          width: 32px;
-          height: 8px;
-          border-radius: 9999px;
-        }
         `
       ],
       breakpoints: {
-        0:    { slidesPerView: 2, slidesPerGroup: 2 },
-        576:  { slidesPerView: 3, slidesPerGroup: 3 },
-        768:  { slidesPerView: 4, slidesPerGroup: 4 },
-        992:  { slidesPerView: 5, slidesPerGroup: 5 },
+        0: { slidesPerView: 2, slidesPerGroup: 2 },
+        576: { slidesPerView: 3, slidesPerGroup: 3 },
+        768: { slidesPerView: 4, slidesPerGroup: 4 },
+        992: { slidesPerView: 5, slidesPerGroup: 5 },
         1200: { slidesPerView: 6, slidesPerGroup: 6 },
       }
     });
@@ -334,15 +276,27 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     swiperEl.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') this.swiperRef.nativeElement.swiper.slideNext();
-      if (e.key === 'ArrowLeft')  this.swiperRef.nativeElement.swiper.slidePrev();
+      if (e.key === 'ArrowLeft') this.swiperRef.nativeElement.swiper.slidePrev();
     });
 
-    swiperEl.swiper.on('touchStart', () => swiperEl.classList.add('is-dragging'));
-    swiperEl.swiper.on('touchEnd',   () => swiperEl.classList.remove('is-dragging'));
+    swiperEl.swiper.on('slideChange', () => {
+      const swiper = this.swiperRef.nativeElement.swiper;
+      const spg = this.getCurrentSlidesPerGroup();
+      this.activePage = Math.round(swiper.realIndex / spg);
+    });
+
+    swiperEl.swiper.on('sliderMove', () => swiperEl.classList.add('is-dragging'));
+    swiperEl.swiper.on('touchEnd', () => swiperEl.classList.remove('is-dragging'));
+    swiperEl.swiper.on('touchCancel', () => swiperEl.classList.remove('is-dragging'));
+  }
+
+  goToPage(page: number) {
+    this.activePage = page;
+    const spg = this.getCurrentSlidesPerGroup();
+    this.swiperRef.nativeElement.swiper.slideToLoop(page * spg);
   }
 
   onItemClick(item: { label: string; icon: string }) {
-    console.log('Clicked:', item.label);
     alert(item.label);
   }
 
